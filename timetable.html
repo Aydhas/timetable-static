@@ -1,41 +1,306 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Thapar Time Table</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8"/>
+  <title>Timetable – TIET</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:     #002147;
+      --navy-mid: #003366;
+      --gold:     #C8932A;
+      --gold-lt:  #E8B050;
+      --white:    #FFFFFF;
+      --off-white:#F5F7FA;
+      --text:     #1A2535;
+      --muted:    #6B7A90;
+      --border:   #DDE3EC;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--off-white);
+      min-height: 100vh;
+      color: var(--text);
+    }
+
+    /* ── Top bar ──────────────────────────────────────────────────────── */
+    .topbar {
+      background: var(--navy);
+      padding: 0 2rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar-left { display: flex; align-items: center; gap: 1.5rem; }
+
+    .back-btn {
+      display: flex; align-items: center; gap: 6px;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.15);
+      transition: background 0.15s, color 0.15s;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+
+    .topbar-logo { height: 34px; width: auto; }
+
+    .topbar-title {
+      color: var(--white);
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .topbar-title span {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: rgba(255,255,255,0.55);
+    }
+
+    /* ── Sub-header ───────────────────────────────────────────────────── */
+    .subheader {
+      background: var(--white);
+      border-bottom: 3px solid var(--gold);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .subheader-group {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+
+    .group-code {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--navy);
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.01em;
+    }
+
+    .group-year {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .subheader-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .pill {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.04em;
+    }
+    .pill-l { background: rgba(0,198,92,0.12);  color: #0A8040; border: 1px solid rgba(0,198,92,0.3);  }
+    .pill-p { background: rgba(67,70,248,0.1);  color: #2B2FCC; border: 1px solid rgba(67,70,248,0.25); }
+    .pill-t { background: rgba(200,0,0,0.08);   color: #A00000; border: 1px solid rgba(200,0,0,0.2);   }
+    .pill-w { background: rgba(200,147,42,0.12); color: #7A5000; border: 1px solid rgba(200,147,42,0.3); }
+
+    /* ── Table wrapper ────────────────────────────────────────────────── */
+    .table-wrapper {
+      padding: 1.5rem 1rem;
+      overflow-x: auto;
+    }
+
+    table {
+      border-collapse: separate;
+      border-spacing: 6px;
+      width: 100%;
+      min-width: 600px;
+    }
+
+    td {
+      border-radius: 8px;
+      padding: 0;
+      vertical-align: middle;
+      text-align: center;
+    }
+
+    .cell-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 68px;
+      padding: 8px 6px;
+      gap: 2px;
+    }
+
+    /* ── Header cells ─────────────────────────────────────────────────── */
+    .header-day {
+      background: var(--navy) !important;
+      color: #CFDDF7 !important;
+      font-weight: 600;
+      font-size: clamp(0.65rem, 1.3vw, 0.82rem);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .header-time {
+      background: #1A3055 !important;
+      color: #A8C0E0 !important;
+      font-size: clamp(0.6rem, 1.1vw, 0.75rem);
+      font-weight: 500;
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+    }
+
+    /* ── Empty cells ──────────────────────────────────────────────────── */
+    .cell-empty {
+      background: var(--white);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Subject cells ────────────────────────────────────────────────── */
+    .cell-l {
+      background: rgba(0,198,92,0.1);
+      border: 1px solid rgba(0,198,92,0.25);
+    }
+    .cell-p {
+      background: rgba(67,70,248,0.1);
+      border: 1px solid rgba(67,70,248,0.25);
+    }
+    .cell-t {
+      background: rgba(200,0,0,0.07);
+      border: 1px solid rgba(200,0,0,0.18);
+    }
+
+    td:not(.header-day):not(.header-time):not(.cell-empty):hover {
+      filter: brightness(0.95);
+      transform: scale(1.01);
+      transition: transform 0.15s, filter 0.15s;
+    }
+
+    /* ── Cell text layers ─────────────────────────────────────────────── */
+    .cell-code {
+      font-size: clamp(0.6rem, 1.2vw, 0.82rem);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+      word-break: break-word;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .cell-name {
+      font-size: clamp(0.48rem, 0.9vw, 0.68rem);
+      font-weight: 400;
+      color: var(--muted);
+      line-height: 1.25;
+      word-break: break-word;
+      font-style: italic;
+      max-width: 120px;
+    }
+
+    .cell-week {
+      font-size: clamp(0.42rem, 0.8vw, 0.6rem);
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 8px;
+      background: rgba(200,147,42,0.15);
+      border: 1px solid rgba(200,147,42,0.35);
+      color: #7A5000;
+      letter-spacing: 0.03em;
+      margin-top: 2px;
+    }
+
+    /* ── States ───────────────────────────────────────────────────────── */
+    #tt-loading, #tt-error {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--muted);
+    }
+
+    .spinner {
+      width: 28px; height: 28px;
+      border: 2px solid var(--border);
+      border-top-color: var(--navy);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #tt-error a { color: var(--navy); }
+
+    /* ── Mobile ───────────────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .topbar { padding: 0 1rem; }
+      .topbar-title span { display: none; }
+      .subheader { padding: 0.75rem 1rem; }
+      .group-code { font-size: 1.25rem; }
+      .table-wrapper { padding: 0.75rem 0.25rem; }
+      table { border-spacing: 3px; }
+      .cell-inner { min-height: 52px; padding: 5px 3px; }
+    }
+  </style>
 </head>
-
-<!-- Google tag -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-SSECP1SFQX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-SSECP1SFQX');
-</script>
-
 <body>
-  <div id="tt-header" style="text-align:center; padding: 1.5rem 1rem 0.5rem;">
-    <a href="index.html" class="back-link">← Back to Search</a>
-    <h2 id="tt-title" class="text-white" style="margin-top:0.5rem; font-family:'Rubik',sans-serif;"></h2>
-  </div>
 
-  <div id="tt-error" style="display:none; text-align:center; padding:3rem; color:rgba(255,255,255,0.5);">
-    Group not found. <a href="index.html" style="color:#90c8ff;">Go back</a>
+<header class="topbar">
+  <div class="topbar-left">
+    <a href="index.html" class="back-btn">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path d="M19 12H5M12 5l-7 7 7 7"/>
+      </svg>
+      Back
+    </a>
+    <img src="https://lms.thapar.edu/moodle/pluginfile.php/1/theme_moove/logo/1659956381/TIET-LMS%20Logo%20%283%29.png"
+         alt="TIET" class="topbar-logo" onerror="this.style.display='none'"/>
+    <div class="topbar-title">
+      Thapar Institute
+      <span>Student Timetable Portal</span>
+    </div>
   </div>
+</header>
 
-  <div id="tt-loading" style="text-align:center; padding:3rem; color:rgba(255,255,255,0.4);">
-    Loading…
+<div class="subheader" id="tt-subheader" style="display:none;">
+  <div class="subheader-group">
+    <span class="group-code" id="tt-group-code"></span>
+    <span class="group-year" id="tt-group-year"></span>
   </div>
-
-  <div class="table-responsive" id="tt-container" style="display:none;">
-    <table class="table table-dark table-hover" id="tt-table"></table>
+  <div class="subheader-pills">
+    <span class="pill pill-l">Lecture</span>
+    <span class="pill pill-p">Practical</span>
+    <span class="pill pill-t">Tutorial</span>
+    <span class="pill pill-w">Alt. week</span>
   </div>
+</div>
 
-  <script src="script.js"></script>
+<div id="tt-loading">
+  <div class="spinner"></div>
+  Loading timetable…
+</div>
+
+<div id="tt-error" style="display:none;">
+  Group not found. <a href="index.html">Go back</a>
+</div>
+
+<div class="table-wrapper" id="tt-container" style="display:none;">
+  <table id="tt-table"></table>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>

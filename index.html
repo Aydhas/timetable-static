@@ -1,72 +1,423 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Thapar Time Table</title>
-  <meta name="title" content="Time Table Generator" />
-  <meta name="description" content="Quick Time Table Generator for Thapar University Students" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="Time Table Generator" />
-  <meta property="og:description" content="Quick Time Table Generator for Thapar University Students" />
-  <meta property="og:image" content="https://www.utkarsh.ninja/favicon-32x32.png" />
-  <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:title" content="Time Table Generator" />
-  <meta property="twitter:description" content="Quick Time Table Generator for Thapar University Students" />
-  <meta property="twitter:image" content="https://www.utkarsh.ninja/favicon-32x32.png" />
-  <link rel="shortcut icon" href="https://www.utkarsh.ninja/favicon-32x32.png" type="image/x-icon" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Aoboshi+One&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8"/>
+  <title>TIET First Year Timetable</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:     #002147;
+      --navy-mid: #003366;
+      --gold:     #C8932A;
+      --gold-lt:  #E8B050;
+      --white:    #FFFFFF;
+      --off-white:#F5F7FA;
+      --text:     #1A2535;
+      --muted:    #6B7A90;
+      --border:   #DDE3EC;
+      --shadow:   0 4px 24px rgba(0,33,71,0.13);
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--off-white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Top bar ──────────────────────────────────────────────────────── */
+    .topbar {
+      background: var(--navy);
+      padding: 0 2rem;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .topbar-brand { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+    .topbar-logo  { height: 36px; width: auto; }
+
+    .topbar-title {
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      line-height: 1.2;
+    }
+    .topbar-title span {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.04em;
+    }
+
+    .topbar-pill {
+      background: var(--gold);
+      color: var(--navy);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 3px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    /* ── Layout ───────────────────────────────────────────────────────── */
+    .page {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      min-height: calc(100vh - 64px);
+    }
+
+    /* ── Sidebar ──────────────────────────────────────────────────────── */
+    .sidebar {
+      background: var(--navy);
+      padding: 2.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .sidebar-welcome {
+      color: rgba(255,255,255,0.55);
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .sidebar-heading {
+      color: var(--white);
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.25;
+      margin-bottom: 0.5rem;
+    }
+
+    .sidebar-sub {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.82rem;
+      line-height: 1.55;
+      margin-bottom: 2rem;
+    }
+
+    .sidebar-divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin-bottom: 2rem;
+    }
+
+    .sidebar-info-block {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    .sidebar-info-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold-lt);
+      margin-bottom: 0.5rem;
+    }
+
+    .sidebar-info-text {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.72);
+      line-height: 1.6;
+    }
+
+    .sidebar-legend { margin-top: auto; padding-top: 2rem; }
+
+    .legend-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 0.75rem;
+    }
+
+    .legend-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+
+    .legend-dot {
+      width: 12px; height: 12px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+    .legend-dot-l { background: rgba(0,198,92,0.5);  border: 1px solid rgba(0,198,92,0.8); }
+    .legend-dot-p { background: rgba(67,70,248,0.5); border: 1px solid rgba(67,70,248,0.8); }
+    .legend-dot-t { background: rgba(255,0,4,0.5);   border: 1px solid rgba(255,0,4,0.8); }
+
+    .legend-text { font-size: 0.78rem; color: rgba(255,255,255,0.55); }
+
+    /* ── Main ─────────────────────────────────────────────────────────── */
+    .main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 460px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+      padding: 1.75rem 2rem;
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .card-header-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .card-logo-img { height: 40px; width: auto; }
+
+    .card-header-title { color: var(--white); font-size: 1.1rem; font-weight: 700; }
+    .card-header-sub   { color: rgba(255,255,255,0.6); font-size: 0.78rem; margin-top: 2px; }
+
+    .card-body   { padding: 2rem; }
+    .card-footer {
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    /* ── Form ─────────────────────────────────────────────────────────── */
+    .field-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      display: block;
+      letter-spacing: 0.01em;
+    }
+
+    .search-wrap { position: relative; margin-bottom: 0.5rem; }
+
+    .search-icon {
+      position: absolute;
+      left: 14px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+      display: flex;
+    }
+
+    #group-search {
+      width: 100%;
+      padding: 0.72rem 1rem 0.72rem 2.6rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: var(--text);
+      background: var(--off-white);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    #group-search:focus {
+      border-color: var(--navy);
+      box-shadow: 0 0 0 3px rgba(0,33,71,0.08);
+      background: var(--white);
+    }
+
+    #group-search::placeholder { color: var(--muted); }
+
+    #search-results {
+      display: none;
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0; right: 0;
+      max-height: 240px;
+      overflow-y: auto;
+      background: var(--white);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0,33,71,0.13);
+      z-index: 50;
+    }
+    #search-results.show { display: block; }
+
+    .search-item {
+      padding: 0.65rem 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.12s;
+    }
+    .search-item:last-child { border-bottom: none; }
+    .search-item:hover, .search-item.active { background: #EEF2F8; }
+    .search-item-code { font-weight: 600; }
+    .search-item-year {
+      font-size: 0.72rem; color: var(--muted);
+      background: var(--off-white);
+      padding: 2px 8px; border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    #no-results { padding: 1rem; text-align: center; color: var(--muted); font-size: 0.85rem; }
+
+    #selected-display { min-height: 28px; margin-bottom: 0.25rem; }
+
+    .selected-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #EEF7F2; border: 1px solid #B8DFC8;
+      border-radius: 6px; padding: 4px 10px;
+      font-size: 0.78rem; font-weight: 500; color: #1A6B3C;
+    }
+
+    .btn-primary {
+      width: 100%; padding: 0.78rem;
+      background: var(--navy); color: var(--white);
+      border: none; border-radius: 8px;
+      font-family: inherit; font-size: 0.92rem; font-weight: 600;
+      cursor: pointer; letter-spacing: 0.01em;
+      transition: background 0.2s, transform 0.15s;
+      margin-top: 1rem;
+    }
+    .btn-primary:hover:not(:disabled) { background: var(--navy-mid); }
+    .btn-primary:active:not(:disabled) { transform: scale(0.99); }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* ── Spinner ──────────────────────────────────────────────────────── */
+    #loading-state { text-align: center; padding: 1.5rem 0; color: var(--muted); font-size: 0.85rem; }
+    .spinner {
+      width: 22px; height: 22px;
+      border: 2px solid var(--border);
+      border-top-color: var(--navy);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 0.75rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Mobile ───────────────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .page { grid-template-columns: 1fr; }
+      .sidebar { padding: 1.75rem 1.5rem; }
+      .sidebar-legend { display: none; }
+      .main { padding: 2rem 1rem; align-items: flex-start; padding-top: 1.5rem; }
+      .topbar { padding: 0 1rem; }
+      .topbar-title span { display: none; }
+    }
+  </style>
 </head>
+<body>
 
-<!-- Google tag -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-SSECP1SFQX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-SSECP1SFQX');
-</script>
+<header class="topbar">
+  <div class="topbar-brand">
+    <img src="https://lms.thapar.edu/moodle/pluginfile.php/1/theme_moove/logo/1659956381/TIET-LMS%20Logo%20%283%29.png"
+         alt="TIET" class="topbar-logo" onerror="this.style.display='none'"/>
+    <div class="topbar-title">
+      Thapar Institute of Engineering &amp; Technology
+      <span>Student Timetable Portal</span>
+    </div>
+  </div>
+  <div class="topbar-pill">AUG – DEC 2026</div>
+</header>
 
-<body class="bg-dark">
-  <div class="container">
-    <h3 class="text-white home-title">
-      Thapar University <br />Time Table
-    </h3>
+<div class="page">
+  <aside class="sidebar">
+    <p class="sidebar-welcome">Welcome to</p>
+    <h1 class="sidebar-heading">First Year<br/>Timetable</h1>
+    <p class="sidebar-sub">Search your group code to instantly view your weekly schedule for the odd semester.</p>
+    <hr class="sidebar-divider"/>
+    <div class="sidebar-info-block">
+      <div class="sidebar-info-label">How to find your group</div>
+      <div class="sidebar-info-text">
+        Your group code is on your admit card or fee receipt — it looks like <strong style="color:#fff;">1A1A</strong> or <strong style="color:#fff;">1B3C</strong>. The first digit is your year, the letter is your branch pool.
+      </div>
+    </div>
+    <div class="sidebar-info-block">
+      <div class="sidebar-info-label">Alternate-week classes</div>
+      <div class="sidebar-info-text">
+        Cells marked <strong style="color:#ffd966;">Week 1</strong> or <strong style="color:#ffd966;">Week 2</strong> run on alternating weeks from the semester start date.
+      </div>
+    </div>
+    <div class="sidebar-legend">
+      <div class="legend-label">Class types</div>
+      <div class="legend-item"><div class="legend-dot legend-dot-l"></div><span class="legend-text">Lecture (L)</span></div>
+      <div class="legend-item"><div class="legend-dot legend-dot-p"></div><span class="legend-text">Practical / Lab (P)</span></div>
+      <div class="legend-item"><div class="legend-dot legend-dot-t"></div><span class="legend-text">Tutorial (T)</span></div>
+    </div>
+  </aside>
 
-    <div id="custom-card" class="glass-card card">
-      <!-- Loading state -->
-      <div id="loading-state" class="py-4 text-center text-white" style="opacity:0.5;">
-        Loading timetable data…
+  <main class="main">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-top">
+          <img src="https://lms.thapar.edu/moodle/pluginfile.php/1/theme_moove/logo/1659956381/TIET-LMS%20Logo%20%283%29.png"
+               alt="TIET" class="card-logo-img" onerror="this.style.display='none'"/>
+          <div>
+            <div class="card-header-title">View Your Timetable</div>
+            <div class="card-header-sub">First Year · Odd Semester 2026–27</div>
+          </div>
+        </div>
       </div>
 
-      <!-- Main form (shown after data loads) -->
-      <form id="form" style="display:none;">
-        <div class="form-group mt-4 mb-3" style="padding:1rem; align-items:center;">
-          <label class="text-white mb-2" style="font-size:0.9rem; opacity:0.7;">Search your group</label>
-          <div class="search-wrapper">
-            <input
-              type="text"
-              id="group-search"
-              placeholder="e.g. 1A1A, 2B3C…"
-              autocomplete="off"
-              spellcheck="false"
-            />
+      <div class="card-body">
+        <div id="loading-state">
+          <div class="spinner"></div>
+          Loading timetable data…
+        </div>
+
+        <form id="form" style="display:none;">
+          <label class="field-label" for="group-search">Group code</label>
+          <div class="search-wrap">
+            <span class="search-icon">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+              </svg>
+            </span>
+            <input type="text" id="group-search" placeholder="e.g. 1A1A, 1B3C…" autocomplete="off" spellcheck="false"/>
             <div id="search-results"></div>
           </div>
           <div id="selected-display"></div>
-        </div>
+          <button type="submit" class="btn-primary" id="submit-btn" disabled>View Timetable →</button>
+        </form>
+      </div>
 
-        <div class="mb-3">
-          <button type="submit" class="btn-get">Get Schedule</button>
-        </div>
-      </form>
+      <div class="card-footer">
+        Data for AUG–DEC 2026 &nbsp;·&nbsp; First Year students only
+      </div>
     </div>
-  </div>
+  </main>
+</div>
 
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
