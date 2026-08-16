@@ -292,6 +292,16 @@
 
     #tt-error a { color: var(--navy); }
 
+    .tt-disclaimer {
+      text-align: center;
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-style: italic;
+      padding: 0.75rem 1rem 0.25rem;
+      line-height: 1.5;
+      opacity: 0.75;
+    }
+
     /* ── Mobile: rotate table to day-cards ───────────────────────────── */
     @media (max-width: 700px) {
       .topbar { padding: 0 1rem; }
@@ -354,8 +364,23 @@
         align-items: center;
         min-height: 54px;
       }
+      .day-slot-gap .slot-content { min-height: 36px; padding: 0.4rem 0.75rem; }
 
-      .slot-empty { color: var(--muted); font-size: 0.72rem; opacity: 0.4; }
+      .day-slot-gap .slot-time {
+        background: #F7F9FC;
+        color: #B0BBCA;
+      }
+      .day-slot-gap .slot-content {
+        background: #FAFBFD;
+        min-height: 40px;
+      }
+      .slot-free {
+        font-size: 0.68rem;
+        color: #C4CDD8;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
 
       .slot-code {
         font-size: 0.8rem;
@@ -413,8 +438,8 @@
       </svg>
     </div>
     <div class="topbar-title">
-      Thapar Institute
-      <span>Student Timetable Portal</span>
+      TIET Student Timetable
+      <span>Independent Student Project</span>
     </div>
   </div>
 </header>
@@ -460,6 +485,9 @@
 <div class="table-wrapper" id="tt-container" style="display:none;">
   <table id="tt-table"></table>
   <div id="day-cards"></div>
+  <p class="tt-disclaimer">
+    Generated from the official timetable released by DOAA &amp; maintained as an independent student project.
+  </p>
 </div>
 
 <script src="script.js"></script>
@@ -515,9 +543,9 @@
       card.appendChild(hdr);
 
       day.slots.forEach(slot => {
-        if (!slot.code && !slot.name) return; // skip empty rows
         const row = document.createElement('div');
-        row.className = 'day-slot';
+        // Mark gap rows so they can be styled differently
+        row.className = slot.code ? 'day-slot' : 'day-slot day-slot-gap';
 
         const timeEl = document.createElement('div');
         timeEl.className = 'slot-time';
@@ -535,7 +563,7 @@
           `;
           contentEl.appendChild(inner);
         } else {
-          contentEl.innerHTML = '<span class="slot-empty">—</span>';
+          contentEl.innerHTML = '<span class="slot-free">Free</span>';
         }
 
         row.appendChild(timeEl);
