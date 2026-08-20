@@ -420,6 +420,129 @@
     @media (min-width: 701px) {
       #day-cards { display: none; }
     }
+  
+    /* ── Elective cell ────────────────────────────────────────────────── */
+    .cell-elective {
+      background: rgba(200,147,42,0.06);
+      border: 1.5px dashed rgba(200,147,42,0.5) !important;
+    }
+    .cell-elective-label {
+      font-size: clamp(0.48rem, 1.4vw, 0.68rem);
+      font-weight: 600;
+      color: #7A5000;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .cell-elective-btn {
+      font-size: clamp(0.42rem, 1.2vw, 0.6rem);
+      font-weight: 700;
+      background: var(--gold);
+      color: var(--navy);
+      border: none;
+      border-radius: 6px;
+      padding: 3px 8px;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+    }
+    .cell-elective-btn:hover { background: var(--gold-lt, #E8B050); }
+
+    .cell-elective-chosen { cursor: pointer; }
+    .cell-elective-edit {
+      font-size: clamp(0.38rem, 1vw, 0.55rem);
+      color: var(--muted);
+      opacity: 0.7;
+      margin-top: 2px;
+    }
+
+    /* ── Modal ────────────────────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+    .modal {
+      background: var(--white);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      overflow: hidden;
+    }
+    .modal-header {
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid, #003366));
+      padding: 1.1rem 1.4rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+    .modal-title { color: #fff; font-size: 1rem; font-weight: 700; }
+    .modal-subtitle { color: rgba(255,255,255,0.5); font-size: 0.7rem; margin-top: 2px; letter-spacing: 0.06em; }
+    .modal-close {
+      background: none; border: none; color: rgba(255,255,255,0.6);
+      font-size: 1rem; cursor: pointer; padding: 2px 4px; line-height: 1;
+    }
+    .modal-close:hover { color: #fff; }
+
+    .modal-body { padding: 1.25rem 1.4rem; }
+    .modal-field-label {
+      font-size: 0.76rem; font-weight: 600; color: var(--text);
+      display: block; margin-bottom: 0.4rem;
+    }
+    .modal-select {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: inherit; font-size: 0.85rem;
+      color: var(--text); background: var(--off-white);
+      outline: none;
+    }
+    .modal-select:focus { border-color: var(--navy); }
+
+    .modal-detail {
+      margin-top: 0.85rem;
+      background: var(--off-white);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem 1rem;
+    }
+    .detail-row { margin-bottom: 0.6rem; }
+    .detail-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.6rem; }
+    .detail-label {
+      display: block;
+      font-size: 0.63rem; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 2px;
+    }
+    .detail-value { font-size: 0.85rem; font-weight: 500; color: var(--text); }
+    .detail-code  { color: #2563EB; }
+
+    .modal-footer {
+      padding: 0.9rem 1.4rem;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-btn-remove {
+      background: none; border: none; color: #DC2626;
+      font-size: 0.82rem; font-weight: 500; cursor: pointer; padding: 0;
+    }
+    .modal-btn-remove:hover { text-decoration: underline; }
+    .modal-btn-cancel {
+      background: none; border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 0.5rem 1rem;
+      font-family: inherit; font-size: 0.85rem; cursor: pointer; color: var(--text);
+    }
+    .modal-btn-save {
+      background: var(--navy); color: #fff;
+      border: none; border-radius: 8px;
+      padding: 0.5rem 1.1rem;
+      font-family: inherit; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+    }
+    .modal-btn-save:hover { background: var(--navy-mid, #003366); }
+
   </style>
 </head>
 <body>
@@ -575,18 +698,14 @@
     }
   }
 
-  // Hook into timetable ready — poll for tt-container becoming visible
-  const obs = new MutationObserver(() => {
-    const container = document.getElementById('tt-container');
-    const tableEl   = document.getElementById('tt-table');
-    const cardsEl   = document.getElementById('day-cards');
-    if (container && container.style.display !== 'none' && tableEl && cardsEl) {
-      obs.disconnect();
-      // Small delay to let renderTable() finish
-      setTimeout(() => buildDayCards(tableEl, cardsEl), 50);
+  // Listen for timetable-ready event (fired by script.js after renderTable)
+  document.addEventListener('timetable-ready', () => {
+    const tableEl = document.getElementById('tt-table');
+    const cardsEl = document.getElementById('day-cards');
+    if (tableEl && cardsEl) {
+      setTimeout(() => buildDayCards(tableEl, cardsEl), 30);
     }
   });
-  obs.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
 })();
 </script>
 </body>
